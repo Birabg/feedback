@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lockin feedback</title>
+<meta name="description" content="Tell Bira what to fix, change or build next in Lockin.">
+<meta name="theme-color" content="#f4f6fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0f1a" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Lockin feedback">
+<meta property="og:description" content="Found a bug or have an idea? Help shape what Lockin becomes next.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lockin feedback">
+<meta name="twitter:description" content="Found a bug or have an idea? Help shape what Lockin becomes next.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6fa; --panel:#ffffff; --line:#dbe1ec; --text:#101827; --muted:#5d6a80;
+  --accent:#c98a12; --accent-ink:#1a1204; --accent-soft:#fbf0d9; --ring-track:#e6eaf2; --danger:#c2412d;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0a0f1a; --panel:#111829; --line:#212c42; --text:#e9eef7; --muted:#8e9ab0;
+    --accent:#f2b544; --accent-ink:#1a1204; --accent-soft:#2a2414; --ring-track:#1c2538; --danger:#ff8a73;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:17px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:40px 20px 64px;display:grid;gap:40px}
+@media (min-width:880px){.wrap{grid-template-columns:340px 1fr;gap:64px;padding-top:72px}}
+
+/* Left: the session ring */
+aside{align-self:start}
+@media (min-width:880px){aside{position:sticky;top:48px}}
+.brand{display:inline-flex;align-items:center;gap:8px;font-weight:700;text-decoration:none;font-size:16px;color:var(--muted)}
+.brand:hover{color:var(--text)}
+h1{font-size:clamp(38px,6vw,56px);line-height:1.02;letter-spacing:-.03em;font-weight:800;margin:20px 0 14px;font-variation-settings:"opsz" 96}
+.lede{color:var(--muted);margin:0 0 28px;max-width:34ch}
+.ring-row{display:flex;align-items:center;gap:20px}
+.ring{position:relative;width:132px;height:132px;flex:none}
+.ring svg{transform:rotate(-90deg);display:block}
+.ring circle{fill:none;stroke-width:10}
+.ring .track{stroke:var(--ring-track)}
+.ring .bar{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .5s cubic-bezier(.2,.8,.2,1)}
+.ring .pct{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .pct b{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.ring .pct span{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.ring-note{font-size:15px;color:var(--muted);margin:0}
+.ring-note strong{color:var(--text);font-weight:600}
+@media (max-width:879px){.ring{width:96px;height:96px}.ring svg{width:96px;height:96px}.ring .pct b{font-size:24px}}
+
+/* Right: the form */
+form{display:grid;gap:36px}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend,.label{font-weight:700;font-size:19px;letter-spacing:-.01em;padding:0;margin-bottom:4px}
+.hint{color:var(--muted);font-size:15px;margin:0 0 14px}
+.opt{color:var(--muted);font-weight:400;font-size:15px}
+input[type=text],textarea{
+  width:100%;font:inherit;color:var(--text);background:var(--panel);
+  border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;outline:none;transition:border-color .15s
+}
+textarea{min-height:160px;resize:vertical;line-height:1.55}
+input[type=text]:focus,textarea:focus{border-color:var(--accent)}
+.counter{font-size:13px;color:var(--muted);text-align:right;margin-top:6px}
+
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.chip span{
+  display:inline-block;padding:10px 16px;border-radius:999px;border:1.5px solid var(--line);
+  background:var(--panel);font-size:16px;cursor:pointer;user-select:none;transition:background .15s,border-color .15s,color .15s
+}
+.chip input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.chip input:focus-visible + span{outline:3px solid var(--accent);outline-offset:3px}
+
+.kinds{display:grid;gap:10px}
+@media (min-width:560px){.kinds{grid-template-columns:repeat(3,1fr)}}
+.kind{position:relative}
+.kind input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.kind label{
+  display:block;height:100%;padding:16px;border-radius:16px;border:1.5px solid var(--line);background:var(--panel);cursor:pointer;transition:border-color .15s,background .15s
+}
+.kind b{display:block;font-size:17px}
+.kind small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.kind input:checked + label{border-color:var(--accent);background:var(--accent-soft)}
+.kind input:focus-visible + label{outline:3px solid var(--accent);outline-offset:3px}
+
+.scale{display:flex;gap:8px}
+.scale .chip{flex:1}
+.scale .chip span{display:block;text-align:center;padding:12px 0;font-weight:700;font-size:18px;border-radius:14px}
+.scale-ends{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:8px}
+
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding-top:4px}
+button{
+  font:inherit;font-weight:700;font-size:17px;border:0;border-radius:999px;padding:16px 28px;cursor:pointer;
+  background:var(--accent);color:var(--accent-ink);transition:transform .1s,opacity .15s
+}
+button:hover{transform:translateY(-1px)}
+button:active{transform:translateY(0)}
+button:disabled{opacity:.55;cursor:progress;transform:none}
+button:focus-visible{outline:3px solid var(--text);outline-offset:3px}
+.ghost{background:transparent;color:var(--text);border:1.5px solid var(--line)}
+.error{color:var(--danger);font-size:15px;margin:0}
+.privacy{color:var(--muted);font-size:14px;margin:0}
+
+.done{display:none;padding:8px 0}
+.done h2{font-size:clamp(30px,4.5vw,42px);letter-spacing:-.03em;line-height:1.05;margin:0 0 12px}
+.done p{color:var(--muted);margin:0 0 28px;max-width:44ch}
+.is-done form{display:none}
+.is-done .done{display:block}
+
+.setup{background:var(--accent-soft);border:1.5px dashed var(--accent);border-radius:14px;padding:14px 16px;font-size:15px}
+.setup code{font-size:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <aside>
+    <a class="brand" href="https://lockin-beige-three.vercel.app/dashboard">🔒 Lockin</a>
+    <h1>Help shape what Lockin becomes next.</h1>
+    <p class="lede">Found a bug, missing something, or have an idea? Tell me here. I read every response and use them to plan the next update.</p>
+    <div class="ring-row">
+      <div class="ring" aria-hidden="true">
+        <svg width="132" height="132" viewBox="0 0 132 132">
+          <circle class="track" cx="66" cy="66" r="56"/>
+          <circle class="bar" id="bar" cx="66" cy="66" r="56"/>
+        </svg>
+        <div class="pct"><div><b id="pct">0%</b><span>of goal</span></div></div>
+      </div>
+      <p class="ring-note" id="ringNote">Takes about <strong>2 minutes</strong>. Fill in the questions to complete your session.</p>
+    </div>
+  </aside>
+
+  <main>
+    <div class="setup" id="setup" hidden>
+      <strong>Not connected yet.</strong> Add your Google Form ID and entry IDs to the <code>CONFIG</code> block at the bottom of this file. This notice disappears once they're set.
+    </div>
+
+    <noscript><p class="setup">This form needs JavaScript to send your feedback. Please enable it and reload the page.</p></noscript>
+
+    <form id="form" novalidate>
+      <div>
+        <label class="label" for="name">Your name or Telegram handle <span class="opt">(optional)</span></label>
+        <p class="hint">So I can thank you or ask a follow-up question.</p>
+        <input type="text" id="name" name="name" autocomplete="nickname" placeholder="@yourhandle">
+      </div>
+
+      <fieldset>
+        <legend>How often do you use Lockin?</legend>
+        <p class="hint">Pick one.</p>
+        <div class="chips" data-track="usage">
+          <label class="chip"><input type="radio" name="usage" value="Every day"><span>Every day</span></label>
+          <label class="chip"><input type="radio" name="usage" value="A few times a week"><span>A few times a week</span></label>
+          <label class="chip"><input type="radio" name="usage" value="Tried it once or twice"><span>Tried it once or twice</span></label>
+          <label class="chip"><input type="radio" name="usage" value="Haven't tried it yet"><span>Haven't tried it yet</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Which part is this about?</legend>
+        <p class="hint">Pick as many as you like.</p>
+        <div class="chips" data-track="areas">
+          <label class="chip"><input type="checkbox" name="areas" value="Focus timer"><span>Focus timer</span></label>
+          <label class="chip"><input type="checkbox" name="areas" value="Feed and posts"><span>Feed and posts</span></label>
+          <label class="chip"><input type="checkbox" name="areas" value="Stats and streaks"><span>Stats and streaks</span></label>
+          <label class="chip"><input type="checkbox" name="areas" value="Leaderboard"><span>Leaderboard</span></label>
+          <label class="chip"><input type="checkbox" name="areas" value="Buddies and people"><span>Buddies and people</span></label>
+          <label class="chip"><input type="checkbox" name="areas" value="Live rooms"><span>Live rooms</span></label>
+          <label class="chip"><input type="checkbox" name="areas" value="Timelapses"><span>Timelapses</span></label>
+          <label class="chip"><input type="checkbox" name="areas" value="Design and look"><span>Design and look</span></label>
+          <label class="chip"><input type="checkbox" name="areas" value="Something new"><span>Something new</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>What kind of feedback is it?</legend>
+        <p class="hint">Pick one.</p>
+        <div class="kinds" data-track="kind">
+          <div class="kind"><input type="radio" name="kind" id="k1" value="Bug"><label for="k1"><b>🐞 Bug</b><small>Something is broken</small></label></div>
+          <div class="kind"><input type="radio" name="kind" id="k2" value="Improvement"><label for="k2"><b>🔧 Improvement</b><small>Make something better</small></label></div>
+          <div class="kind"><input type="radio" name="kind" id="k3" value="New feature"><label for="k3"><b>💡 New feature</b><small>Add something new</small></label></div>
+        </div>
+      </fieldset>
+
+      <div>
+        <label class="label" for="message">Your suggestion</label>
+        <p class="hint">Be as specific as you can. If it's a bug, say what you did and what happened.</p>
+        <textarea id="message" name="message" maxlength="2000" placeholder="I'd love it if the timer…"></textarea>
+        <div class="counter"><span id="count">0</span> / 2000</div>
+      </div>
+
+      <fieldset>
+        <legend>How would you rate Lockin right now?</legend>
+        <p class="hint">1 is poor, 5 is great.</p>
+        <div class="scale chips" data-track="rating">
+          <label class="chip"><input type="radio" name="rating" value="1"><span>1</span></label>
+          <label class="chip"><input type="radio" name="rating" value="2"><span>2</span></label>
+          <label class="chip"><input type="radio" name="rating" value="3"><span>3</span></label>
+          <label class="chip"><input type="radio" name="rating" value="4"><span>4</span></label>
+          <label class="chip"><input type="radio" name="rating" value="5"><span>5</span></label>
+        </div>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" id="submit">Send feedback</button>
+        <p class="error" id="error" role="alert" hidden></p>
+      </div>
+      <p class="privacy">Your answers go straight to Bira. Nothing is shown publicly.</p>
+    </form>
+
+    <section class="done" aria-live="polite">
+      <h2>Feedback sent. Thank you!</h2>
+      <p>Your idea is now on the list for the next Lockin update. Keep an eye on the Telegram channel to see what ships.</p>
+      <div class="actions">
+        <button type="button" id="again">Send more feedback</button>
+        <a class="ghost" href="https://lockin-beige-three.vercel.app/dashboard/timer" style="text-decoration:none;font-weight:700;border-radius:999px;padding:15px 26px">Start a focus session</a>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — connect your Google Form here.
+   1. formId: from your form's link
+      https://docs.google.com/forms/d/e/<THIS PART>/viewform
+   2. entry IDs: open your form > ⋮ > "Get pre-filled link",
+      fill every question, click "Get link", and copy each
+      entry.123456789 number into the matching field below.
+   ============================================================ */
+const CONFIG = {
+  formId: "YOUR_FORM_ID",
+  entries: {
+    name:    "entry.0000000001",
+    usage:   "entry.0000000002",
+    areas:   "entry.0000000003",
+    kind:    "entry.0000000004",
+    message: "entry.0000000005",
+    rating:  "entry.0000000006"
+  }
+};
+
+const form = document.getElementById("form");
+const app = document.getElementById("app");
+const bar = document.getElementById("bar");
+const pct = document.getElementById("pct");
+const note = document.getElementById("ringNote");
+const msg = document.getElementById("message");
+const count = document.getElementById("count");
+const errorEl = document.getElementById("error");
+const submitBtn = document.getElementById("submit");
+
+const configured = !CONFIG.formId.startsWith("YOUR_") && !Object.values(CONFIG.entries).some(e => /entry\.000000000\d/.test(e));
+const isLocal = location.protocol === "file:" || /^(localhost|127.0.0.1|[::1])$/.test(location.hostname);
+// The setup notice is for the developer only; visitors on the live site never see it.
+document.getElementById("setup").hidden = configured || !isLocal;
+
+const C = 2 * Math.PI * 56;
+bar.style.strokeDasharray = C;
+bar.style.strokeDashoffset = C;
+
+function steps(){
+  const fd = new FormData(form);
+  return [
+    !!fd.get("usage"),
+    fd.getAll("areas").length > 0,
+    !!fd.get("kind"),
+    msg.value.trim().length >= 10,
+    !!fd.get("rating")
+  ];
+}
+
+function update(){
+  const s = steps();
+  const done = s.filter(Boolean).length;
+  const p = Math.round(done / s.length * 100);
+  bar.style.strokeDashoffset = C * (1 - p / 100);
+  pct.textContent = p + "%";
+  const left = s.length - done;
+  note.innerHTML = left === 0
+    ? "<strong>Goal reached.</strong> Send it whenever you're ready."
+    : `<strong>${left} question${left > 1 ? "s" : ""} left.</strong> Fill them in to complete your session.`;
+  count.textContent = msg.value.length;
+  if (!errorEl.hidden) errorEl.hidden = true;
+}
+
+form.addEventListener("input", update);
+form.addEventListener("change", update);
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fd = new FormData(form);
+  const s = steps();
+  if (!s[3]) return showError("Write your suggestion first (at least a short sentence).", msg);
+  if (!s[2]) return showError("Choose what kind of feedback this is.");
+  if (!configured) return showError(isLocal
+    ? "This form isn't connected to Google Forms yet. Add the IDs in the CONFIG block."
+    : "Feedback is temporarily unavailable. Please try again later.");
+
+  const body = new URLSearchParams();
+  const E = CONFIG.entries;
+  const name = (fd.get("name") || "").trim();
+  if (name) body.append(E.name, name);
+  if (fd.get("usage")) body.append(E.usage, fd.get("usage"));
+  fd.getAll("areas").forEach(a => body.append(E.areas, a));
+  body.append(E.kind, fd.get("kind"));
+  body.append(E.message, msg.value.trim());
+  if (fd.get("rating")) body.append(E.rating, fd.get("rating"));
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Sending…";
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 15000);
+  try {
+    await fetch(`https://docs.google.com/forms/d/e/${CONFIG.formId}/formResponse`, {
+      method: "POST", mode: "no-cors", body, signal: ctrl.signal
+    });
+    app.classList.add("is-done");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (err) {
+    showError("Couldn't send. Check your internet connection and try again.");
+  } finally {
+    clearTimeout(timer);
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Send feedback";
+  }
+});
+
+function showError(text, focusEl){
+  errorEl.textContent = text;
+  errorEl.hidden = false;
+  if (focusEl) focusEl.focus();
+}
+
+document.getElementById("again").addEventListener("click", () => {
+  form.reset();
+  app.classList.remove("is-done");
+  update();
+  document.getElementById("message").focus();
+});
+
+update();
+</script>
+</body>
+</html>
