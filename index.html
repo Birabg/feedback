@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Lockin feedback</title>
 <meta name="description" content="Tell Bira what to fix, change or build next in Lockin.">
-<meta name="theme-color" content="#f4f6fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a0f1a" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Lockin feedback">
@@ -16,132 +16,286 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f4f6fa; --panel:#ffffff; --line:#dbe1ec; --text:#101827; --muted:#5d6a80;
-  --accent:#c98a12; --accent-ink:#1a1204; --accent-soft:#fbf0d9; --ring-track:#e6eaf2; --danger:#c2412d;
+  --bg:#f7f5f0; --panel:#fffdf8; --panel-2:#efeadf; --line:#e3dccd; --line-strong:#c9bfab;
+  --text:#1a1712; --muted:#5f584c; --placeholder:#776f62;
+  --accent:#dfa02c; --accent-text:#8a5a00; --accent-ink:#1a1204; --accent-soft:#fbefd4;
+  --track:#e7e0d1; --danger:#b3361f; --glow:rgba(223,160,44,.5);
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --bg:#0a0f1a; --panel:#111829; --line:#212c42; --text:#e9eef7; --muted:#8e9ab0;
-    --accent:#f2b544; --accent-ink:#1a1204; --accent-soft:#2a2414; --ring-track:#1c2538; --danger:#ff8a73;
+    --bg:#0a0f1a; --panel:#111829; --panel-2:#0d1322; --line:#222d44; --line-strong:#38466a;
+    --text:#e9eef7; --muted:#9aa5ba; --placeholder:#8591a8;
+    --accent:#f2b544; --accent-text:#f5c264; --accent-ink:#1a1204; --accent-soft:rgba(242,181,68,.12);
+    --track:#243049; --danger:#ff8a73; --glow:rgba(242,181,68,.55);
     color-scheme:dark;
   }
 }
 *{box-sizing:border-box}
-:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{margin:0}
 body{
   background:var(--bg); color:var(--text);
   font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   font-size:17px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom,0px);
 }
 a{color:inherit}
-.wrap{max-width:1040px;margin:0 auto;padding:40px 20px 64px;display:grid;gap:40px}
-@media (min-width:880px){.wrap{grid-template-columns:340px 1fr;gap:64px;padding-top:72px}}
+svg{display:block}
+:focus-visible{outline:3px solid var(--accent-text);outline-offset:3px}
 
-/* Left: the session ring */
-aside{align-self:start}
-@media (min-width:880px){aside{position:sticky;top:48px}}
-.brand{display:inline-flex;align-items:center;gap:8px;font-weight:700;text-decoration:none;font-size:16px;color:var(--muted)}
+/* ---------- Layout ---------- */
+.wrap{max-width:720px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top,0px)) 16px 72px;display:grid;gap:44px}
+@media (min-width:640px){.wrap{padding:48px 32px 96px;gap:56px}}
+@media (min-width:1100px){
+  .wrap{max-width:1240px;grid-template-columns:minmax(400px,470px) minmax(0,660px);justify-content:space-between;gap:72px;padding:72px 48px 128px}
+  aside{position:sticky;top:56px}
+}
+aside{align-self:start;min-width:0}
+main{min-width:0}
+
+/* ---------- Hero ---------- */
+.brand{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-weight:600;text-decoration:none;font-size:16px;color:var(--muted)}
 .brand:hover{color:var(--text)}
-h1{font-size:clamp(38px,6vw,56px);line-height:1.02;letter-spacing:-.03em;font-weight:800;margin:20px 0 14px;font-variation-settings:"opsz" 96}
-.lede{color:var(--muted);margin:0 0 28px;max-width:34ch}
-.ring-row{display:flex;align-items:center;gap:20px}
-.ring{position:relative;width:132px;height:132px;flex:none}
-.ring svg{transform:rotate(-90deg);display:block}
-.ring circle{fill:none;stroke-width:10}
-.ring .track{stroke:var(--ring-track)}
-.ring .bar{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .5s cubic-bezier(.2,.8,.2,1)}
-.ring .pct{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
-.ring .pct b{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1}
-.ring .pct span{display:block;font-size:13px;color:var(--muted);margin-top:4px}
-.ring-note{font-size:15px;color:var(--muted);margin:0}
-.ring-note strong{color:var(--text);font-weight:600}
-@media (max-width:879px){.ring{width:96px;height:96px}.ring svg{width:96px;height:96px}.ring .pct b{font-size:24px}}
+h1{font-size:clamp(34px,2.4vw + 22px,56px);line-height:1.04;letter-spacing:-.032em;font-weight:700;margin:12px 0 14px;font-variation-settings:"opsz" 96;text-wrap:balance}
+.lede{color:var(--muted);margin:0;max-width:40ch}
 
-/* Right: the form */
-form{display:grid;gap:36px}
+/* ---------- Session card + ring ---------- */
+.session{margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:20px;display:flex;align-items:center;gap:20px}
+@media (min-width:640px){.session{padding:24px;gap:28px}}
+.ring{position:relative;flex:none;width:116px;height:116px}
+@media (min-width:640px){.ring{width:176px;height:176px}}
+@media (min-width:1100px){.ring{width:196px;height:196px}}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg);transition:filter .7s ease}
+.ring circle{fill:none;stroke-width:16}
+.ring .track{stroke:var(--track)}
+.ring .fill{stroke:var(--accent);transition:stroke-dasharray .6s cubic-bezier(.2,.8,.2,1)}
+.ring.is-full svg{filter:drop-shadow(0 0 12px var(--glow))}
+.ring-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring-center b{font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.ring-center span{display:block;font-size:11px;color:var(--muted);margin-top:4px}
+@media (min-width:640px){.ring-center b{font-size:42px}.ring-center span{font-size:14px;margin-top:6px}}
+.ring.is-full .ring-center span{color:var(--accent-text);font-weight:600}
+
+.session-side{min-width:0;flex:1}
+.ring-note{margin:0;font-size:15px;color:var(--muted)}
+.ring-note strong{display:block;color:var(--text);font-weight:600;font-size:17px}
+.steps{display:none;list-style:none;margin:12px 0 0;padding:0}
+@media (min-width:640px){.steps{display:block}}
+.steps button{
+  all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;min-height:40px;
+  font-size:15px;color:var(--muted);cursor:pointer;border-radius:8px;padding:0 6px;margin:0 -6px
+}
+.steps button:hover{color:var(--text)}
+.steps button:focus-visible{outline:3px solid var(--accent-text);outline-offset:0}
+.dot{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--line-strong);display:grid;place-items:center}
+.dot svg{width:12px;height:12px;opacity:0}
+.steps .is-answered button{color:var(--text)}
+.steps .is-answered .dot{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.steps .is-answered .dot svg{opacity:1}
+
+/* ---------- Mobile sticky progress ---------- */
+.mbar{
+  position:fixed;left:0;right:0;top:0;z-index:20;display:none;align-items:center;gap:12px;
+  padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;
+  background:var(--bg);background:color-mix(in srgb,var(--bg) 90%,transparent);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)
+}
+.mbar.show{display:flex}
+@media (min-width:1100px){.mbar.show{display:none}}
+.mbar svg{width:36px;height:36px;transform:rotate(-90deg);flex:none}
+.mbar circle{fill:none;stroke-width:4}
+.mbar .track{stroke:var(--track)}
+.mbar .fill{stroke:var(--accent);transition:stroke-dashoffset .5s}
+.mbar p{margin:0;font-size:15px;color:var(--muted)}
+.mbar p b{color:var(--text);font-weight:600}
+.mbar .line{position:absolute;left:0;bottom:-1px;height:2px;background:var(--accent);width:0;transition:width .5s}
+
+/* ---------- Form timeline ---------- */
+.setup{background:var(--accent-soft);border:1.5px dashed var(--accent);border-radius:14px;padding:14px 16px;font-size:15px;margin:0 0 32px}
+.setup code{font-size:14px}
+form{margin:0}
+.qs{list-style:none;margin:0;padding:0;position:relative}
+.qs::before{content:"";position:absolute;left:15px;top:20px;bottom:40px;width:2px;background:var(--line)}
+@media (min-width:640px){.qs::before{left:17px}}
+.q{position:relative;padding:0 0 52px 50px;scroll-margin-top:84px}
+@media (min-width:640px){.q{padding:0 0 60px 64px}}
+.q:last-child{padding-bottom:0}
+.marker{
+  position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--bg);
+  border:2px solid var(--line-strong);display:grid;place-items:center;font-weight:600;font-size:14px;color:var(--muted);
+  font-variant-numeric:tabular-nums;transition:background .2s,border-color .2s,color .2s
+}
+@media (min-width:640px){.marker{width:36px;height:36px;font-size:15px}}
+.marker svg{width:16px;height:16px;display:none}
+.q.is-answered .marker{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.q.is-answered .marker .num{display:none}
+.q.is-answered .marker svg{display:block}
+.q-end .marker{background:var(--panel);color:var(--accent-text);border-color:var(--accent)}
+.q-end .marker svg{display:block}
+
 fieldset{border:0;margin:0;padding:0;min-width:0}
-legend,.label{font-weight:700;font-size:19px;letter-spacing:-.01em;padding:0;margin-bottom:4px}
-.hint{color:var(--muted);font-size:15px;margin:0 0 14px}
-.opt{color:var(--muted);font-weight:400;font-size:15px}
-input[type=text],textarea{
-  width:100%;font:inherit;color:var(--text);background:var(--panel);
-  border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;outline:none;transition:border-color .15s
-}
-textarea{min-height:160px;resize:vertical;line-height:1.55}
-input[type=text]:focus,textarea:focus{border-color:var(--accent)}
-.counter{font-size:13px;color:var(--muted);text-align:right;margin-top:6px}
+legend,.qt{display:block;font-weight:600;font-size:20px;line-height:1.3;letter-spacing:-.012em;padding:0;margin:3px 0 0}
+@media (min-width:640px){legend,.qt{font-size:21px;margin-top:4px}}
+.hint{color:var(--muted);font-size:15px;margin:4px 0 0}
+.optional{color:var(--muted);font-weight:400;font-size:15px}
+.field{margin-top:16px}
 
-.chips{display:flex;flex-wrap:wrap;gap:10px}
-.chip{position:relative}
-.chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
-.chip span{
-  display:inline-block;padding:10px 16px;border-radius:999px;border:1.5px solid var(--line);
-  background:var(--panel);font-size:16px;cursor:pointer;user-select:none;transition:background .15s,border-color .15s,color .15s
+/* Option tiles (radio + checkbox) */
+.grid{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.usage{grid-template-columns:1fr}
+@media (min-width:480px){.usage{grid-template-columns:1fr 1fr}}
+@media (max-width:359px){.areas{grid-template-columns:1fr}}
+.areas{grid-template-columns:1fr 1fr}
+.areas .opt:last-child{grid-column:1 / -1}
+@media (min-width:640px){.areas{grid-template-columns:repeat(3,1fr)}.areas .opt:last-child{grid-column:auto}}
+.opt{position:relative;display:block}
+.opt input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer;z-index:1}
+.opt > span{
+  display:flex;align-items:center;gap:12px;height:100%;min-height:54px;padding:11px 14px;
+  border:1.5px solid var(--line);border-radius:14px;background:var(--panel);font-size:16px;line-height:1.3;
+  transition:border-color .15s,background .15s
 }
-.chip input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
-.chip input:focus-visible + span{outline:3px solid var(--accent);outline-offset:3px}
+.areas .opt > span{font-size:15px;gap:10px;padding:10px 12px}
+.opt:hover > span{border-color:var(--line-strong)}
+.opt input:checked + span{border-color:var(--accent);background:var(--accent-soft)}
+.opt input:focus-visible + span{outline:3px solid var(--accent-text);outline-offset:2px}
+.ind{flex:none;width:20px;height:20px;border:2px solid var(--line-strong);border-radius:50%;display:grid;place-items:center;background:var(--panel)}
+.ind.sq{border-radius:6px}
+.ind svg{width:12px;height:12px;opacity:0}
+.opt input:checked + span .ind{border-color:var(--accent);background:var(--accent)}
+.opt input:checked + span .ind:not(.sq){box-shadow:inset 0 0 0 4px var(--panel)}
+.opt input:checked + span .ind.sq{color:var(--accent-ink)}
+.opt input:checked + span .ind svg{opacity:1}
 
+/* Kind tiles */
 .kinds{display:grid;gap:10px}
 @media (min-width:560px){.kinds{grid-template-columns:repeat(3,1fr)}}
-.kind{position:relative}
-.kind input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
-.kind label{
-  display:block;height:100%;padding:16px;border-radius:16px;border:1.5px solid var(--line);background:var(--panel);cursor:pointer;transition:border-color .15s,background .15s
+.kind > span{display:grid;grid-template-columns:auto 1fr;align-items:center;align-content:start;gap:4px 14px;padding:14px 16px;min-height:64px}
+@media (min-width:560px){.kind > span{grid-template-columns:1fr;align-items:start;gap:0;padding:18px}}
+.kind .ico{grid-row:span 2;width:40px;height:40px;border-radius:12px;background:var(--panel-2);display:grid;place-items:center;color:var(--muted);transition:background .15s,color .15s}
+@media (min-width:560px){.kind .ico{grid-row:auto;margin-bottom:14px}}
+.kind .ico svg{width:22px;height:22px}
+.kind b{font-weight:600;font-size:17px}
+.kind small{color:var(--muted);font-size:14px}
+.kind input:checked + span .ico{background:var(--accent);color:var(--accent-ink)}
+
+/* Message */
+textarea{
+  display:block;width:100%;font:inherit;color:var(--text);background:var(--panel);
+  border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;min-height:176px;resize:vertical;line-height:1.55;
+  transition:border-color .15s
 }
-.kind b{display:block;font-size:17px}
-.kind small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
-.kind input:checked + label{border-color:var(--accent);background:var(--accent-soft)}
-.kind input:focus-visible + label{outline:3px solid var(--accent);outline-offset:3px}
-
-.scale{display:flex;gap:8px}
-.scale .chip{flex:1}
-.scale .chip span{display:block;text-align:center;padding:12px 0;font-weight:700;font-size:18px;border-radius:14px}
-.scale-ends{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:8px}
-
-.actions{display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding-top:4px}
-button{
-  font:inherit;font-weight:700;font-size:17px;border:0;border-radius:999px;padding:16px 28px;cursor:pointer;
-  background:var(--accent);color:var(--accent-ink);transition:transform .1s,opacity .15s
+input[type=text]{
+  display:block;width:100%;font:inherit;color:var(--text);background:var(--bg);min-height:52px;
+  border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;transition:border-color .15s
 }
-button:hover{transform:translateY(-1px)}
-button:active{transform:translateY(0)}
-button:disabled{opacity:.55;cursor:progress;transform:none}
-button:focus-visible{outline:3px solid var(--text);outline-offset:3px}
-.ghost{background:transparent;color:var(--text);border:1.5px solid var(--line)}
-.error{color:var(--danger);font-size:15px;margin:0}
-.privacy{color:var(--muted);font-size:14px;margin:0}
+textarea:hover,input[type=text]:hover{border-color:var(--line-strong)}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+::placeholder{color:var(--placeholder);opacity:1}
+.msg-meta:not(:has(:not([hidden]))){display:none}
+.msg-meta{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:14px;color:var(--muted)}
+.counter{margin-left:auto;font-variant-numeric:tabular-nums}
+.counter.near{color:var(--danger)}
 
-.done{display:none;padding:8px 0}
-.done h2{font-size:clamp(30px,4.5vw,42px);letter-spacing:-.03em;line-height:1.05;margin:0 0 12px}
-.done p{color:var(--muted);margin:0 0 28px;max-width:44ch}
-.is-done form{display:none}
+/* Rating */
+.rates{display:grid;grid-template-columns:repeat(5,1fr);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+.rate{position:relative}
+.rate input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer;z-index:1}
+.rate span{display:grid;place-items:center;min-height:58px;font-weight:600;font-size:20px;border-left:1.5px solid var(--line);transition:background .15s,color .15s;font-variant-numeric:tabular-nums}
+.rate:first-child span{border-left:0}
+.rate:hover span{background:var(--panel-2)}
+.rate.below span{background:var(--accent-soft);color:var(--accent-text)}
+.rate input:checked + span{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.rate input:focus-visible + span{outline:3px solid var(--accent-text);outline-offset:-4px;border-radius:12px}
+.rate-meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;font-size:14px;color:var(--muted)}
+.rate-meta output{font-size:15px;color:var(--text);font-weight:600}
+.rate-meta output.empty{color:var(--muted);font-weight:400}
+
+/* Finish */
+.finish{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:20px;display:grid;gap:22px}
+@media (min-width:640px){.finish{padding:28px}}
+.finish .qt{margin-top:0;font-size:18px}
+#submit{
+  all:unset;box-sizing:border-box;position:relative;display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;min-height:60px;padding:0 24px;border-radius:16px;cursor:pointer;
+  font-weight:700;font-size:18px;letter-spacing:-.01em;background:var(--accent);color:var(--accent-ink);
+  transition:background .2s,color .2s,box-shadow .2s
+}
+#submit:hover{box-shadow:0 6px 20px -8px var(--glow)}
+#submit:focus-visible{outline:3px solid var(--text);outline-offset:3px}
+#submit svg{width:20px;height:20px}
+#submit[aria-disabled="true"]{background:var(--panel-2);color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line);cursor:not-allowed}
+#submit:disabled{cursor:progress}
+.spin{display:none;width:18px;height:18px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:spin .8s linear infinite}
+#submit.is-sending .spin{display:block}
+#submit.is-sending .arrow{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.send-status{margin:10px 0 0;font-size:15px;color:var(--muted);text-align:center}
+.send-status.ready{color:var(--accent-text);font-weight:600}
+.error{color:var(--danger);font-size:15px;margin:10px 0 0;text-align:center;font-weight:500}
+.privacy{color:var(--muted);font-size:14px;margin:0;padding-top:18px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}
+.privacy svg{width:16px;height:16px;flex:none;margin-top:3px}
+
+/* ---------- Success ---------- */
+.done{display:none;padding-top:4px}
+.done:focus{outline:none}
+.done h2{font-size:clamp(34px,2.4vw + 20px,52px);letter-spacing:-.032em;line-height:1.04;font-weight:700;margin:0 0 16px}
+.done p{color:var(--muted);margin:0 0 12px;max-width:44ch;font-size:18px}
+.done p strong{color:var(--text);font-weight:600}
+.done-badge{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px 0 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);font-weight:600;font-size:15px;margin-bottom:20px}
+.done-badge i{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.done-badge svg{width:13px;height:13px}
+.done-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{
+  font:inherit;font-weight:700;font-size:17px;border:0;border-radius:14px;min-height:52px;padding:0 24px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:var(--accent);color:var(--accent-ink)
+}
+.btn.ghost{background:transparent;color:var(--text);box-shadow:inset 0 0 0 1.5px var(--line-strong)}
+.btn.ghost:hover{box-shadow:inset 0 0 0 1.5px var(--text)}
+@media (max-width:479px){.done-actions .btn{flex:1 1 100%}}
+.is-done form,.is-done .setup{display:none}
 .is-done .done{display:block}
 
-.setup{background:var(--accent-soft);border:1.5px dashed var(--accent);border-radius:14px;padding:14px 16px;font-size:15px}
-.setup code{font-size:14px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation-duration:1.6s!important;scroll-behavior:auto!important}
+}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="mbar" id="mbar" aria-hidden="true">
+  <svg viewBox="0 0 36 36"><circle class="track" cx="18" cy="18" r="14"/><circle class="fill" id="mfill" cx="18" cy="18" r="14"/></svg>
+  <p id="mtext"><b>0 of 5</b> answered</p>
+  <span class="line" id="mline"></span>
+</div>
+
 <div class="wrap" id="app">
   <aside>
     <a class="brand" href="https://lockin-beige-three.vercel.app/dashboard">🔒 Lockin</a>
     <h1>Help shape what Lockin becomes next.</h1>
     <p class="lede">Found a bug, missing something, or have an idea? Tell me here. I read every response and use them to plan the next update.</p>
-    <div class="ring-row">
-      <div class="ring" aria-hidden="true">
-        <svg width="132" height="132" viewBox="0 0 132 132">
-          <circle class="track" cx="66" cy="66" r="56"/>
-          <circle class="bar" id="bar" cx="66" cy="66" r="56"/>
-        </svg>
-        <div class="pct"><div><b id="pct">0%</b><span>of goal</span></div></div>
+
+    <div class="session" id="session">
+      <div class="ring" id="ring" role="img" aria-label="Session goal: 0 percent">
+        <svg viewBox="0 0 240 240" id="ringSvg" aria-hidden="true"></svg>
+        <div class="ring-center" aria-hidden="true"><div><b id="pct">0%</b><span id="ringLabel">Session goal</span></div></div>
       </div>
-      <p class="ring-note" id="ringNote">Takes about <strong>2 minutes</strong>. Fill in the questions to complete your session.</p>
+      <div class="session-side">
+        <p class="ring-note" id="ringNote"><strong>5 questions left</strong>Takes about 2 minutes.</p>
+        <ul class="steps" id="steps">
+          <li data-q="usage"><button type="button"><span class="dot"><svg><use href="#i-check"/></svg></span>How often you use it</button></li>
+          <li data-q="areas"><button type="button"><span class="dot"><svg><use href="#i-check"/></svg></span>Which part</button></li>
+          <li data-q="kind"><button type="button"><span class="dot"><svg><use href="#i-check"/></svg></span>Feedback type</button></li>
+          <li data-q="message"><button type="button"><span class="dot"><svg><use href="#i-check"/></svg></span>Your suggestion</button></li>
+          <li data-q="rating"><button type="button"><span class="dot"><svg><use href="#i-check"/></svg></span>Rating</button></li>
+        </ul>
+      </div>
     </div>
   </aside>
 
@@ -149,85 +303,121 @@ button:focus-visible{outline:3px solid var(--text);outline-offset:3px}
     <div class="setup" id="setup" hidden>
       <strong>Not connected yet.</strong> Add your Google Form ID and entry IDs to the <code>CONFIG</code> block at the bottom of this file. This notice disappears once they're set.
     </div>
-
     <noscript><p class="setup">This form needs JavaScript to send your feedback. Please enable it and reload the page.</p></noscript>
 
     <form id="form" novalidate>
-      <div>
-        <label class="label" for="name">Your name or Telegram handle <span class="opt">(optional)</span></label>
-        <p class="hint">So I can thank you or ask a follow-up question.</p>
-        <input type="text" id="name" name="name" autocomplete="nickname" placeholder="@yourhandle">
-      </div>
+      <ol class="qs">
+        <li class="q" id="q-usage">
+          <span class="marker" aria-hidden="true"><span class="num">1</span><svg><use href="#i-check"/></svg></span>
+          <fieldset>
+            <legend>How often do you use Lockin?</legend>
+            <div class="grid usage field">
+              <label class="opt"><input type="radio" name="usage" value="Every day"><span><i class="ind"></i>Every day</span></label>
+              <label class="opt"><input type="radio" name="usage" value="A few times a week"><span><i class="ind"></i>A few times a week</span></label>
+              <label class="opt"><input type="radio" name="usage" value="Tried it once or twice"><span><i class="ind"></i>Tried it once or twice</span></label>
+              <label class="opt"><input type="radio" name="usage" value="Haven't tried it yet"><span><i class="ind"></i>Haven't tried it yet</span></label>
+            </div>
+          </fieldset>
+        </li>
 
-      <fieldset>
-        <legend>How often do you use Lockin?</legend>
-        <p class="hint">Pick one.</p>
-        <div class="chips" data-track="usage">
-          <label class="chip"><input type="radio" name="usage" value="Every day"><span>Every day</span></label>
-          <label class="chip"><input type="radio" name="usage" value="A few times a week"><span>A few times a week</span></label>
-          <label class="chip"><input type="radio" name="usage" value="Tried it once or twice"><span>Tried it once or twice</span></label>
-          <label class="chip"><input type="radio" name="usage" value="Haven't tried it yet"><span>Haven't tried it yet</span></label>
-        </div>
-      </fieldset>
+        <li class="q" id="q-areas">
+          <span class="marker" aria-hidden="true"><span class="num">2</span><svg><use href="#i-check"/></svg></span>
+          <fieldset>
+            <legend>Which part is this about?</legend>
+            <p class="hint">Pick as many as you like.</p>
+            <div class="grid areas field">
+              <label class="opt"><input type="checkbox" name="areas" value="Focus timer"><span><i class="ind sq"><svg><use href="#i-check"/></svg></i>Focus timer</span></label>
+              <label class="opt"><input type="checkbox" name="areas" value="Feed and posts"><span><i class="ind sq"><svg><use href="#i-check"/></svg></i>Feed and posts</span></label>
+              <label class="opt"><input type="checkbox" name="areas" value="Stats and streaks"><span><i class="ind sq"><svg><use href="#i-check"/></svg></i>Stats and streaks</span></label>
+              <label class="opt"><input type="checkbox" name="areas" value="Leaderboard"><span><i class="ind sq"><svg><use href="#i-check"/></svg></i>Leaderboard</span></label>
+              <label class="opt"><input type="checkbox" name="areas" value="Buddies and people"><span><i class="ind sq"><svg><use href="#i-check"/></svg></i>Buddies and people</span></label>
+              <label class="opt"><input type="checkbox" name="areas" value="Live rooms"><span><i class="ind sq"><svg><use href="#i-check"/></svg></i>Live rooms</span></label>
+              <label class="opt"><input type="checkbox" name="areas" value="Timelapses"><span><i class="ind sq"><svg><use href="#i-check"/></svg></i>Timelapses</span></label>
+              <label class="opt"><input type="checkbox" name="areas" value="Design and look"><span><i class="ind sq"><svg><use href="#i-check"/></svg></i>Design and look</span></label>
+              <label class="opt"><input type="checkbox" name="areas" value="Something new"><span><i class="ind sq"><svg><use href="#i-check"/></svg></i>Something new</span></label>
+            </div>
+          </fieldset>
+        </li>
 
-      <fieldset>
-        <legend>Which part is this about?</legend>
-        <p class="hint">Pick as many as you like.</p>
-        <div class="chips" data-track="areas">
-          <label class="chip"><input type="checkbox" name="areas" value="Focus timer"><span>Focus timer</span></label>
-          <label class="chip"><input type="checkbox" name="areas" value="Feed and posts"><span>Feed and posts</span></label>
-          <label class="chip"><input type="checkbox" name="areas" value="Stats and streaks"><span>Stats and streaks</span></label>
-          <label class="chip"><input type="checkbox" name="areas" value="Leaderboard"><span>Leaderboard</span></label>
-          <label class="chip"><input type="checkbox" name="areas" value="Buddies and people"><span>Buddies and people</span></label>
-          <label class="chip"><input type="checkbox" name="areas" value="Live rooms"><span>Live rooms</span></label>
-          <label class="chip"><input type="checkbox" name="areas" value="Timelapses"><span>Timelapses</span></label>
-          <label class="chip"><input type="checkbox" name="areas" value="Design and look"><span>Design and look</span></label>
-          <label class="chip"><input type="checkbox" name="areas" value="Something new"><span>Something new</span></label>
-        </div>
-      </fieldset>
+        <li class="q" id="q-kind">
+          <span class="marker" aria-hidden="true"><span class="num">3</span><svg><use href="#i-check"/></svg></span>
+          <fieldset>
+            <legend>What kind of feedback is it?</legend>
+            <div class="kinds field">
+              <label class="opt kind"><input type="radio" name="kind" id="k1" value="Bug"><span>
+                <i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="13" rx="5"/><path d="M12 11v9M9 4.5L10.5 7M15 4.5L13.5 7M7 12H3.5M20.5 12H17M7.5 16.5l-3 1.5M16.5 16.5l3 1.5M7.5 8.5l-3-1.5M16.5 8.5l3-1.5"/></svg></i>
+                <b>Bug</b><small>Something is broken</small></span></label>
+              <label class="opt kind"><input type="radio" name="kind" id="k2" value="Improvement"><span>
+                <i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.3 5.3L4 17v3h3l5.4-5.4a4 4 0 0 0 5.3-5.3l-2.5 2.5-2.6-.4-.4-2.6 2.5-2.5z"/></svg></i>
+                <b>Improvement</b><small>Make something better</small></span></label>
+              <label class="opt kind"><input type="radio" name="kind" id="k3" value="New feature"><span>
+                <i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1v.1h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z"/></svg></i>
+                <b>New feature</b><small>Add something new</small></span></label>
+            </div>
+          </fieldset>
+        </li>
 
-      <fieldset>
-        <legend>What kind of feedback is it?</legend>
-        <p class="hint">Pick one.</p>
-        <div class="kinds" data-track="kind">
-          <div class="kind"><input type="radio" name="kind" id="k1" value="Bug"><label for="k1"><b>🐞 Bug</b><small>Something is broken</small></label></div>
-          <div class="kind"><input type="radio" name="kind" id="k2" value="Improvement"><label for="k2"><b>🔧 Improvement</b><small>Make something better</small></label></div>
-          <div class="kind"><input type="radio" name="kind" id="k3" value="New feature"><label for="k3"><b>💡 New feature</b><small>Add something new</small></label></div>
-        </div>
-      </fieldset>
+        <li class="q" id="q-message">
+          <span class="marker" aria-hidden="true"><span class="num">4</span><svg><use href="#i-check"/></svg></span>
+          <label class="qt" for="message">Your suggestion</label>
+          <p class="hint" id="msgHint">Be as specific as you can. If it's a bug, say what you did and what happened.</p>
+          <div class="field">
+            <textarea id="message" name="message" maxlength="2000" aria-describedby="msgHint nudge" placeholder="I'd love it if the timer…"></textarea>
+            <div class="msg-meta">
+              <span id="nudge" hidden>Add a little more, at least a short sentence.</span>
+              <span class="counter" id="counter" hidden><span id="count">0</span> / 2000</span>
+            </div>
+          </div>
+        </li>
 
-      <div>
-        <label class="label" for="message">Your suggestion</label>
-        <p class="hint">Be as specific as you can. If it's a bug, say what you did and what happened.</p>
-        <textarea id="message" name="message" maxlength="2000" placeholder="I'd love it if the timer…"></textarea>
-        <div class="counter"><span id="count">0</span> / 2000</div>
-      </div>
+        <li class="q" id="q-rating">
+          <span class="marker" aria-hidden="true"><span class="num">5</span><svg><use href="#i-check"/></svg></span>
+          <fieldset>
+            <legend>How would you rate Lockin right now?</legend>
+            <div class="field">
+              <div class="rates" id="rates">
+                <label class="rate"><input type="radio" name="rating" value="1" aria-label="1, Poor"><span>1</span></label>
+                <label class="rate"><input type="radio" name="rating" value="2" aria-label="2, Needs work"><span>2</span></label>
+                <label class="rate"><input type="radio" name="rating" value="3" aria-label="3, Okay"><span>3</span></label>
+                <label class="rate"><input type="radio" name="rating" value="4" aria-label="4, Good"><span>4</span></label>
+                <label class="rate"><input type="radio" name="rating" value="5" aria-label="5, Great"><span>5</span></label>
+              </div>
+              <div class="rate-meta"><span>Poor</span><output id="rateLabel" class="empty">Tap a number</output><span>Great</span></div>
+            </div>
+          </fieldset>
+        </li>
 
-      <fieldset>
-        <legend>How would you rate Lockin right now?</legend>
-        <p class="hint">1 is poor, 5 is great.</p>
-        <div class="scale chips" data-track="rating">
-          <label class="chip"><input type="radio" name="rating" value="1"><span>1</span></label>
-          <label class="chip"><input type="radio" name="rating" value="2"><span>2</span></label>
-          <label class="chip"><input type="radio" name="rating" value="3"><span>3</span></label>
-          <label class="chip"><input type="radio" name="rating" value="4"><span>4</span></label>
-          <label class="chip"><input type="radio" name="rating" value="5"><span>5</span></label>
-        </div>
-      </fieldset>
-
-      <div class="actions">
-        <button type="submit" id="submit">Send feedback</button>
-        <p class="error" id="error" role="alert" hidden></p>
-      </div>
-      <p class="privacy">Your answers go straight to Bira. Nothing is shown publicly.</p>
+        <li class="q q-end">
+          <span class="marker" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+          <div class="finish">
+            <div>
+              <label class="qt" for="name">Sign it <span class="optional">(optional)</span></label>
+              <p class="hint">Your name or Telegram handle, so I can thank you or ask a follow-up question.</p>
+              <div class="field"><input type="text" id="name" name="name" autocomplete="nickname" placeholder="@yourhandle"></div>
+            </div>
+            <div>
+              <button type="submit" id="submit" aria-describedby="sendStatus">
+                <span class="spin" aria-hidden="true"></span>
+                <span id="btnLabel">Send feedback</span>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+              <p class="send-status" id="sendStatus">Pick a feedback type and write your suggestion to send.</p>
+              <p class="error" id="error" role="alert" hidden></p>
+            </div>
+            <p class="privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Your answers go straight to Bira. Nothing is shown publicly.</p>
+          </div>
+        </li>
+      </ol>
     </form>
 
-    <section class="done" aria-live="polite">
-      <h2>Feedback sent. Thank you!</h2>
-      <p>Your idea is now on the list for the next Lockin update. Keep an eye on the Telegram channel to see what ships.</p>
-      <div class="actions">
-        <button type="button" id="again">Send more feedback</button>
-        <a class="ghost" href="https://lockin-beige-three.vercel.app/dashboard/timer" style="text-decoration:none;font-weight:700;border-radius:999px;padding:15px 26px">Start a focus session</a>
+    <section class="done" id="done" aria-live="polite" tabindex="-1">
+      <div class="done-badge"><i><svg><use href="#i-check"/></svg></i>Feedback sent</div>
+      <h2>Session complete. Thank you!</h2>
+      <p id="doneSummary">Your idea is now on the list for the next Lockin update.</p>
+      <p>Keep an eye on the Telegram channel to see what ships.</p>
+      <div class="done-actions">
+        <button type="button" class="btn" id="again">Send more feedback</button>
+        <a class="btn ghost" href="https://lockin-beige-three.vercel.app/dashboard/timer">Start a focus session</a>
       </div>
     </section>
   </main>
@@ -256,22 +446,60 @@ const CONFIG = {
 
 const form = document.getElementById("form");
 const app = document.getElementById("app");
-const bar = document.getElementById("bar");
-const pct = document.getElementById("pct");
-const note = document.getElementById("ringNote");
 const msg = document.getElementById("message");
 const count = document.getElementById("count");
+const counter = document.getElementById("counter");
+const nudge = document.getElementById("nudge");
 const errorEl = document.getElementById("error");
 const submitBtn = document.getElementById("submit");
+const btnLabel = document.getElementById("btnLabel");
+const sendStatus = document.getElementById("sendStatus");
+const ring = document.getElementById("ring");
+const pct = document.getElementById("pct");
+const ringLabel = document.getElementById("ringLabel");
+const note = document.getElementById("ringNote");
+const mbar = document.getElementById("mbar");
+const rateLabel = document.getElementById("rateLabel");
+const KEYS = ["usage", "areas", "kind", "message", "rating"];
+const RATE_WORDS = { 1: "Poor", 2: "Needs work", 3: "Okay", 4: "Good", 5: "Great" };
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const configured = !CONFIG.formId.startsWith("YOUR_") && !Object.values(CONFIG.entries).some(e => /entry\.000000000\d/.test(e));
-const isLocal = location.protocol === "file:" || /^(localhost|127.0.0.1|[::1])$/.test(location.hostname);
+const isLocal = location.protocol === "file:" || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
 // The setup notice is for the developer only; visitors on the live site never see it.
 document.getElementById("setup").hidden = configured || !isLocal;
 
-const C = 2 * Math.PI * 56;
-bar.style.strokeDasharray = C;
-bar.style.strokeDashoffset = C;
+/* Ring: five segments, one per question */
+const R = 104, C = 2 * Math.PI * R, SEG = C / 5, GAP = 9;
+const NS = "http://www.w3.org/2000/svg";
+const ringSvg = document.getElementById("ringSvg");
+const fills = [];
+["track", "fill"].forEach(cls => {
+  for (let i = 0; i < 5; i++) {
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", 120); c.setAttribute("cy", 120); c.setAttribute("r", R);
+    c.setAttribute("class", cls);
+    c.style.strokeDashoffset = -(i * SEG + GAP / 2);
+    c.style.strokeDasharray = cls === "track" ? `${SEG - GAP} ${C}` : `0 ${C}`;
+    ringSvg.appendChild(c);
+    if (cls === "fill") fills.push(c);
+  }
+});
+const MC = 2 * Math.PI * 14;
+const mfill = document.getElementById("mfill");
+mfill.style.strokeDasharray = MC;
+mfill.style.strokeDashoffset = MC;
+
+function setRing(done){
+  fills.forEach((c, i) => { c.style.strokeDasharray = `${i < done ? SEG - GAP : 0} ${C}`; });
+  const p = Math.round(done / 5 * 100);
+  pct.textContent = p + "%";
+  ring.classList.toggle("is-full", done === 5);
+  ring.setAttribute("aria-label", `Session goal: ${p} percent`);
+  mfill.style.strokeDashoffset = MC * (1 - done / 5);
+  document.getElementById("mline").style.width = p + "%";
+  document.getElementById("mtext").innerHTML = `<b>${done} of 5</b> answered`;
+}
 
 function steps(){
   const fd = new FormData(form);
@@ -287,26 +515,69 @@ function steps(){
 function update(){
   const s = steps();
   const done = s.filter(Boolean).length;
-  const p = Math.round(done / s.length * 100);
-  bar.style.strokeDashoffset = C * (1 - p / 100);
-  pct.textContent = p + "%";
-  const left = s.length - done;
+  setRing(done);
+  KEYS.forEach((k, i) => {
+    document.getElementById("q-" + k).classList.toggle("is-answered", s[i]);
+    document.querySelector(`.steps [data-q="${k}"]`).classList.toggle("is-answered", s[i]);
+  });
+  const left = 5 - done;
+  ringLabel.textContent = left === 0 ? "Goal reached" : "Session goal";
   note.innerHTML = left === 0
-    ? "<strong>Goal reached.</strong> Send it whenever you're ready."
-    : `<strong>${left} question${left > 1 ? "s" : ""} left.</strong> Fill them in to complete your session.`;
-  count.textContent = msg.value.length;
+    ? "<strong>Goal reached</strong>Send it whenever you're ready."
+    : `<strong>${left} question${left > 1 ? "s" : ""} left</strong>${done === 0 ? "Takes about 2 minutes." : "Each answer fills the ring."}`;
+
+  // Message helpers: nudge when too short, counter only near the limit
+  const len = msg.value.length;
+  count.textContent = len;
+  counter.hidden = len < 1600;
+  counter.classList.toggle("near", len >= 1900);
+  nudge.hidden = !(msg.value.trim().length > 0 && !s[3]);
+
+  // Rating label + fill up to the chosen number
+  const r = Number(new FormData(form).get("rating")) || 0;
+  document.querySelectorAll(".rate").forEach((el, i) => el.classList.toggle("below", i + 1 < r));
+  rateLabel.textContent = r ? `${r} · ${RATE_WORDS[r]}` : "Tap a number";
+  rateLabel.classList.toggle("empty", !r);
+
+  // Send readiness (kind + message are needed)
+  const ready = s[2] && s[3];
+  submitBtn.setAttribute("aria-disabled", String(!ready));
+  sendStatus.classList.toggle("ready", ready);
+  sendStatus.textContent = ready
+    ? (left === 0 ? "All set. Your session is complete." : "Ready to send. The other questions are optional.")
+    : !s[2] && !s[3] ? "Pick a feedback type and write your suggestion to send."
+    : !s[2] ? "Pick a feedback type to send."
+    : "Write your suggestion to send.";
+
   if (!errorEl.hidden) errorEl.hidden = true;
 }
 
 form.addEventListener("input", update);
 form.addEventListener("change", update);
 
+/* Checklist jumps to its question */
+document.querySelectorAll(".steps li").forEach(li => {
+  li.querySelector("button").addEventListener("click", () => {
+    const q = document.getElementById("q-" + li.dataset.q);
+    q.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    const target = q.querySelector("input:checked") || q.querySelector("input, textarea");
+    if (target) target.focus({ preventScroll: true });
+  });
+});
+
+/* Compact progress bar on small screens once the ring scrolls away */
+if ("IntersectionObserver" in window) {
+  new IntersectionObserver(([e]) => {
+    mbar.classList.toggle("show", !e.isIntersecting && e.boundingClientRect.top < 0 && !app.classList.contains("is-done"));
+  }).observe(document.getElementById("session"));
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const fd = new FormData(form);
   const s = steps();
   if (!s[3]) return showError("Write your suggestion first (at least a short sentence).", msg);
-  if (!s[2]) return showError("Choose what kind of feedback this is.");
+  if (!s[2]) return showError("Choose what kind of feedback this is.", document.getElementById("k1"));
   if (!configured) return showError(isLocal
     ? "This form isn't connected to Google Forms yet. Add the IDs in the CONFIG block."
     : "Feedback is temporarily unavailable. Please try again later.");
@@ -322,23 +593,47 @@ form.addEventListener("submit", async (e) => {
   if (fd.get("rating")) body.append(E.rating, fd.get("rating"));
 
   submitBtn.disabled = true;
-  submitBtn.textContent = "Sending…";
+  submitBtn.classList.add("is-sending");
+  btnLabel.textContent = "Sending…";
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 15000);
   try {
     await fetch(`https://docs.google.com/forms/d/e/${CONFIG.formId}/formResponse`, {
       method: "POST", mode: "no-cors", body, signal: ctrl.signal
     });
-    app.classList.add("is-done");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    showDone(fd);
   } catch (err) {
     showError("Couldn't send. Check your internet connection and try again.");
   } finally {
     clearTimeout(timer);
     submitBtn.disabled = false;
-    submitBtn.textContent = "Send feedback";
+    submitBtn.classList.remove("is-sending");
+    btnLabel.textContent = "Send feedback";
   }
 });
+
+function showDone(fd){
+  const kindWord = { "Bug": "bug report", "Improvement": "improvement idea", "New feature": "feature idea" }[fd.get("kind")] || "feedback";
+  const areas = fd.getAll("areas");
+  const summary = document.getElementById("doneSummary");
+  summary.textContent = "";
+  summary.append("Your ");
+  const strong = document.createElement("strong");
+  strong.textContent = kindWord + (areas.length ? " about " + listJoin(areas.map(a => a.toLowerCase())) : "");
+  summary.append(strong, " is on the list for the next Lockin update.");
+
+  app.classList.add("is-done");
+  mbar.classList.remove("show");
+  setRing(5);
+  ringLabel.textContent = "Complete";
+  note.innerHTML = "<strong>Feedback logged</strong>Thanks for helping build Lockin.";
+  window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  document.getElementById("done").focus({ preventScroll: true });
+}
+
+function listJoin(a){
+  return a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+}
 
 function showError(text, focusEl){
   errorEl.textContent = text;
